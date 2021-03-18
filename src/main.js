@@ -35,6 +35,21 @@ Vue.use(ElementUI, { locale })
 
 Vue.config.productionTip = false
 
+// #region Avue
+import Avue from '@smallwei/avue'
+import '@smallwei/avue/lib/index.css'
+Vue.use(Avue)
+
+// 如果使用字典需要赋值axios为全局
+import axios from 'axios'
+window.axios = axios
+// #endregion
+
+//#region MonacoEditor
+import MonacoEditor from 'vue-monaco'
+// Vue.use(MonacoEditor)
+//#endregion
+
 new Vue({
   el: '#app',
   router,

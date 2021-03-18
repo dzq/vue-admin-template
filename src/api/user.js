@@ -1,32 +1,72 @@
+import { BaseAPI } from '@/api/base'
 import request from '@/utils/request'
 
-export function login(data) {
-  return request({
-    url: '/vue-admin-template/user/login',
-    method: 'post',
-    data
-  })
-}
+export class User extends BaseAPI {
+  constructor() { super('/user') }
 
-export function getInfo(token) {
-  return request({
-    url: '/vue-admin-template/user/info',
-    method: 'get',
-    params: { token }
-  })
-}
+  /**
+   * 获取验证码
+   */
+  getCode() {
+    return request({
+      url: this.prefix + `/getCode`,
+      method: 'get'
+    })
+  }
 
-export function getList(params) {
-  return request({
-    url: '/vue-admin-template/user/list',
-    method: 'get',
-    params
-  })
-}
+  /**
+   * 用户登录
+   * @param {*} data
+   */
+  login(data) {
+    return request({
+      url: this.prefix + '/login',
+      method: 'post',
+      data
+    })
+  }
+  /**
+   * 管理员用户混合登录
+   * @param {*} data
+   */
+  loginMix(data) {
+    return request({
+      url: this.prefix + '/loginMix',
+      method: 'post',
+      data
+    })
+  }
 
-export function logout() {
-  return request({
-    url: '/vue-admin-template/user/logout',
-    method: 'post'
-  })
+  /**
+   * 用户注册
+   * @param {*} data
+   */
+  add(data) {
+    return request({
+      url: this.prefix + '/register',
+      method: 'post',
+      data
+    })
+  }
+
+  /**
+   * 获取用户信息
+   * @param {用户id} id
+   */
+  getInfo() {
+    return request({
+      url: this.prefix + `/info`,
+      method: 'get'
+    })
+  }
+
+  /**
+   * 用户注销
+   */
+  logout() {
+    return request({
+      url: this.prefix + '/logout',
+      method: 'post'
+    })
+  }
 }

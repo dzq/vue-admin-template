@@ -1,7 +1,8 @@
 'use strict'
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
-
+// webpack.config.js
+const MonacoEditorPlugin = require('monaco-editor-webpack-plugin')
 function resolve(dir) {
   return path.join(__dirname, dir)
 }
@@ -27,7 +28,7 @@ module.exports = {
   publicPath: '/',
   outputDir: 'dist',
   assetsDir: 'static',
-  lintOnSave: process.env.NODE_ENV === 'development',
+  lintOnSave: false,
   productionSourceMap: false,
   devServer: {
     port: port,
@@ -36,7 +37,17 @@ module.exports = {
       warnings: false,
       errors: true
     },
-    before: require('./mock/mock-server.js')
+    hot: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:9006',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': ''
+        }
+      }
+    }
+    // before: require('./mock/mock-server.js')
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
@@ -46,7 +57,17 @@ module.exports = {
       alias: {
         '@': resolve('src')
       }
-    }
+    },
+    plugins: [
+      new MonacoEditorPlugin({
+        // https://github.com/Microsoft/monaco-editor-webpack-plugin#options
+        // Include a subset of languages support
+        // Some language extensions like typescript are so huge that may impact build performance
+        // e.g. Build full languages support with webpack 4.0 takes over 80 seconds
+        // Languages are loaded on demand at runtime
+        languages: ['javascript', 'css', 'html', 'typescript']
+      })
+    ]
   },
   chainWebpack(config) {
     // it can improve the speed of the first screen, it is recommended to turn on preload

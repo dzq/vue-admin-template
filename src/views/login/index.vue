@@ -59,7 +59,7 @@ export default {
   name: 'Login',
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
+      if (value.length < 1) {
         callback(new Error('Please enter the correct user name'))
       } else {
         callback()
@@ -105,11 +105,12 @@ export default {
         this.$refs.password.focus()
       })
     },
-    handleLogin() {
+    handleLogin: function() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm).then(() => {
+            console.log('登录成功')
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
           }).catch(() => {

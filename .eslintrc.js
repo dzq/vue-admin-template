@@ -142,7 +142,7 @@ module.exports = {
     }],
     'no-unreachable': 2,
     'no-unsafe-finally': 2,
-    'no-unused-vars': [2, {
+    'no-unused-vars': [1, {
       'vars': 'all',
       'args': 'none'
     }],
@@ -162,7 +162,7 @@ module.exports = {
       }
     }],
     'padded-blocks': [2, 'never'],
-    'quotes': [2, 'single', {
+    'quotes': [1, 'single', {
       'avoidEscape': true,
       'allowTemplateLiterals': true
     }],
