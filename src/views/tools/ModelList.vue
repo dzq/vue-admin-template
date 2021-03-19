@@ -1,7 +1,7 @@
 <template>
   <div  class="app-container">
     <avue-crud ref="crud" :data="items" v-model="item" :option="option" v-if="visible"
-               :permission="permission"  :table-loading="loading" :height="200"
+               :permission="permission"  :table-loading="loading"
                :page.sync="page" :search.sync="conditions"   @on-load="onLoad" :before-open="beforeOpen"
                @row-save="rowSave" @row-update="rowUpdate" @row-del="rowDel" @search-change="refresh"
                @refresh-change="refresh" @error="error" @selection-change="selectionChange">
@@ -14,7 +14,13 @@
         <el-button icon="el-icon-delete"  type="danger" size="small"  @click="tryDeleteItems" >批量删除</el-button>
         <!--        <el-button  @click="tryItemsStatus(1)" type="success" size="small" icon="el-icon-check">启用</el-button>-->
         <!--        <el-button  @click="tryItemsStatus(0)" type="warning" size="small" icon="el-icon-close">禁用</el-button>-->
-        <el-button @click="drawer = true">导出代码</el-button>
+        <el-button @click="exportCode">导出代码</el-button>
+        <el-checkbox v-model="searchEnabled">允许搜索</el-checkbox>
+        <el-checkbox v-model="showColumn">表格显示</el-checkbox>
+        <el-checkbox v-model="addDisplay">添加显示</el-checkbox>
+        <el-checkbox v-model="addDisabled">添加禁用</el-checkbox>
+        <el-checkbox v-model="editDisplay">编辑显示</el-checkbox>
+        <el-checkbox v-model="editDisabled">编辑禁用</el-checkbox>
       </template>
       <!-- 右侧菜单     -->
       <!--      <template slot="menuRight">-->
@@ -34,30 +40,32 @@
       <!--      </template>-->
       <!--  状态 编辑    -->
       <template slot-scope="scope" slot="searchEnabledForm">
-        <el-switch :disabled="type=='view'" v-model="scope.row.searchEnabled"  ></el-switch>
+        <el-checkbox :disabled="type=='view'" v-model="scope.row.searchEnabled"  ></el-checkbox>
       </template>
       <template slot-scope="scope" slot="showColumnForm">
-        <el-switch :disabled="type=='view'" v-model="scope.row.showColumn"  ></el-switch>
+        <el-checkbox :disabled="type=='view'" v-model="scope.row.showColumn"  ></el-checkbox>
       </template>
       <template slot-scope="scope" slot="addDisplayForm">
-        <el-switch :disabled="type=='view'" v-model="scope.row.addDisplay" ></el-switch>
+        <el-checkbox :disabled="type=='view'" v-model="scope.row.addDisplay" ></el-checkbox>
       </template>
       <template slot-scope="scope" slot="addDisabledForm">
-        <el-switch :disabled="type=='view'" v-model="scope.row.addDisabled" ></el-switch>
+        <el-checkbox :disabled="type=='view'" v-model="scope.row.addDisabled" ></el-checkbox>
       </template>
       <template slot-scope="scope" slot="editDisplayForm">
-        <el-switch :disabled="type=='view'" v-model="scope.row.editDisplay" ></el-switch>
+        <el-checkbox :disabled="type=='view'" v-model="scope.row.editDisplay" ></el-checkbox>
       </template>
       <template slot-scope="scope" slot="editDisabledForm">
-        <el-switch :disabled="type=='view'" v-model="scope.row.editDisabled" ></el-switch>
+        <el-checkbox :disabled="type=='view'" v-model="scope.row.editDisabled" ></el-checkbox>
       </template>
 
     </avue-crud>
+
     <el-drawer
       title="导出代码"
       :visible.sync="drawer"
       :direction="direction"
-      size="50%">
+      size="50%" style="padding-left: 10px;">
+      <span>我来啦!</span>
       <template slot-scope="scope" slot="title">
         <div  >
           <el-button  type="primary" @click="">提交</el-button>
@@ -67,16 +75,20 @@
         </div>
 
       </template>
+      <avue-crud ref="crud" :data="items2" v-model="item2" :option="option2"
+       class="w-full"/>
+      <el-collapse v-model="activeNames">
+        <el-collapse-item title="表格配置" name="1">
+        </el-collapse-item>
+        <el-collapse-item title="操作配置" name="2">
+        </el-collapse-item>
+        <el-collapse-item title="弹窗配置" name="3">
+        </el-collapse-item>
+        <el-collapse-item title="按钮配置" name="4">
+        </el-collapse-item>
+      </el-collapse>
       <MonacoEditor class="editor"   v-model="code" language="javascript" />
-<!--      <el-form style="width: 100%;height: 100%;padding: 10px;">-->
-<!--        <el-form-item size="large" :style="{height: (screenHeight-200)+ 'px'}">-->
-<!--          <MonacoEditor class="editor"  style="height: 600px" v-model="code" language="javascript" />-->
-<!--        </el-form-item>-->
-<!--        <el-form-item size="large">-->
-<!--          <el-button type="primary" @click="">提交</el-button>-->
-<!--          <el-button @click="">重置</el-button>-->
-<!--        </el-form-item>-->
-<!--      </el-form>-->
+
     </el-drawer>
 
   </div>
@@ -92,25 +104,12 @@
     mixins:[data,screen],
     components: { MonacoEditor },
     watch: {
-      screenHeight(val) {
-        // this.visible = false;
-        // this.option.height = val - 200
-        // this.$nextTick(() => {
-        //   this.visible = true;
-        // });
-      },
-      option:{
-        handler:function(val,oldval){
-          console.log(val.searchShow)
-        },
-        deep:true//对象内部的属性监听，也叫深度监听
-      },
-      "option.searchShow":function(val) {
-        console.log(val)
-      }
+
     },
     data() {
       return {
+        activeNames: ['1'],
+        searchEnabled:true,showColumn:true,addDisplay:true,addDisabled:true,editDisplay:true,editDisabled:true,
         drawer: false,
         direction: 'rtl',
         models: [{
@@ -185,35 +184,69 @@
                 },
               ]},
             { label:"默认值", prop:"default"},
-            { label:"允许搜索", prop:"searchEnabled",type: 'boolean',formslot:true,},
-            { label:"表格显示", prop:"showColumn",type: 'boolean',formslot:true,},
-            { label:"添加显示", prop:"addDisplay",type: 'boolean',formslot:true,},
-            { label:"添加禁用", prop:"addDisabled",type: 'boolean',formslot:true,},
-            { label:"编辑显示", prop:"editDisplay",type: 'boolean',formslot:true,},
-            { label:"编辑禁用", prop:"editDisabled",type: 'boolean',formslot:true,},
-            { label:"创建时间", prop:"createTime",addDisplay:false,editDisplay:false},
+            { label:"允许搜索", prop:"searchEnabled",type: 'boolean',formslot:true,span:3},
+            { label:"表格显示", prop:"showColumn",type: 'boolean',formslot:true,span:3},
+            { label:"添加显示", prop:"addDisplay",type: 'boolean',formslot:true,span:3},
+            { label:"添加禁用", prop:"addDisabled",type: 'boolean',formslot:true,span:3},
+            { label:"编辑显示", prop:"editDisplay",type: 'boolean',formslot:true,span:3},
+            { label:"编辑禁用", prop:"editDisabled",type: 'boolean',formslot:true,span:3},
+            { label:"创建时间", prop:"createTime",addDisplay:false,editDisplay:false,span:3},
           ]
         }
       }
     },
     mounted() {
       // this.api = user
+
+  let t =""
+
+    this.option.column.forEach(item=>{
+      let {label,prop} = item
+      // t += `<el-switch v-model="${prop}"  @change="toggle('${prop}')" active-text="${label}"/>\n`
+      t +=  `<el-checkbox v-model="${prop}">${label}</el-checkbox>\n`
+
+    })
+      console.log(t)
     },
     methods:{
       parseItem(item){
         return item.label
       },
       updateScreenHeight(h){
-
-        this.option.height = h - 320 - (this.option.card ? 10 : 0)
+        this.option.height = h - 355
       },
+      exportCode(){
+        let column = this.items.map(item=>{
+          console.log(item)
+          const {label,prop,searchEnabled,showColumn,addDisplay,addDisabled,editDisplay,editDisabled} = item
+          return {label,prop,searchEnabled,showColumn,addDisplay,addDisabled,editDisplay,editDisabled}
+        })
+        let items2 = [{label:"asdsad",prop:"122233233"}]
+        this.items2 = items2
+        this.option2 = {column}
+        this.code = JSON.stringify(this.option2 ,null,"\t");
+        this.drawer = true
+      },
+      toggle(key){
+        console.log(this[key] + " " + key)
+        this.selectedItems.forEach(async item=>{
+          item[key] = this[key]
+          let o = {}
+          o[key] = this[key]
+          await this.updateItem(item.id,o)
+        })
+      }
     },
   }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
   .editor {
     width: 100%;
     height: 100%;
+  }
+
+  ::v-deep.el-drawer__body{
+    padding-left: 10px;
   }
 </style>

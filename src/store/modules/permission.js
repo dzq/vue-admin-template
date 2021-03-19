@@ -240,6 +240,24 @@ const routes = [
         name: 'Model',
         component: 'views/tools/ModelList',
         meta: { title: '模块管理' }
+      },
+      {
+        path: '/tools/model2',
+        name: 'Model2',
+        component: 'views/tools/ModelList2',
+        meta: { title: '模块管理2' }
+      },
+      {
+        path: '/setting/menu2',
+        name: 'Menu2',
+        component: 'views/menu/MenuTree',
+        meta: { title: '菜单管理' }
+      },
+      {
+        path: '/setting/counter',
+        name: 'Counter',
+        component: 'views/tools/Counter',
+        meta: { title: '索引配置' }
       }
     ]
   },

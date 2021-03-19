@@ -1,17 +1,28 @@
 export default {
   data() {
     return {
-      screenHeight: document.body.clientHeight
+      screenHeight: document.body.clientHeight,
+      visible: true,
+      isFirst: true
     };
   },
   mounted() {
-    const that = this;
-    window.onresize = () => {
-      return (() => {
-        window.screenHeight = document.body.clientHeight;
-        that.screenHeight = window.screenHeight;
-      })();
-    };
+    window.onresize = this.onResize
+    this.onResize()
+  },
+  methods:{
+    onResize(){
+      const that = this;
+      window.screenHeight = document.body.clientHeight;
+      that.screenHeight = window.screenHeight;
+      that.updateScreenHeight(that.screenHeight)
+      // this.option.height = windowHeight - 310 - (this.option.card ? 10 : 0);
+      // console.log(this.option.height)
+      this.visible = false;
+      this.$nextTick(() => {
+        this.visible = true;
+      });
+    }
   },
   watch: {
     // screenHeight(val) {

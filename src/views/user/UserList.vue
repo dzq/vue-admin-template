@@ -45,9 +45,10 @@
 <script>
 import { user } from '../../api/apis'
 import data from '../../mixins/data'
+import screen from '../../mixins/screen'
 export default {
   name: 'UserList',
-  mixins:[data],
+  mixins:[data,screen],
   data() {
     return {
       api:user,
@@ -58,8 +59,7 @@ export default {
         copyBtn:true, // 复制按钮
         viewBtn:true, // 查看按钮
         menu:true, // 编辑操作
-        printBtn:true, // 打印
-        excelBtn:true, // 导出
+
       },
 
       option: {
@@ -80,7 +80,8 @@ export default {
         card: true,
         searchMenuSpan: 6,//搜索按钮的长度
         searchShow:false, // 是否显示搜索
-
+        printBtn:true, // 打印
+        excelBtn:true, // 导出
         // saveBtn:false, // form按钮显示
         // updateBtn:false,
         // cancelBtn:false,

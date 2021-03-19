@@ -28,48 +28,12 @@ export default {
   created(){
     this.$nextTick(()=>{
       this.crud = this.$refs["crud"]
-      this.resetHeightHandler()
     })
   },
   beforeDestroy(){
     // window.removeEventListener("resize",this.resetHeight)
   },
   methods:{
-    resetHeightHandler() {
-      let t = this;
-      // window.addEventListener("resize", function() {
-      //   t.resetHeight();
-      // });
-      window.addEventListener("resize",this.resetHeight)
-        t.resetHeight();
-    },
-    resetHeight() {
-      let windowHeight = document.body.clientHeight;
-      let header = document.getElementsByClassName("avue-header")
-      if( header.length > 0 ) {
-        windowHeight -= header[0].clientHeight;
-      }
-      let avueTags = document.getElementsByClassName("avue-tags")
-      if( avueTags.length > 0 ) {
-        windowHeight -= avueTags[0].clientHeight;
-      }
-      let search = document.getElementsByClassName("avue-crud-search")
-      if( search.length > 0 ) {
-        windowHeight -= search[0].clientHeight;
-      }
-      if( isNaN(windowHeight) ) return
-      // console.log("windowHeight " + windowHeight)
-      this.updateScreenHeight(windowHeight)
-      // this.option.height = windowHeight - 310 - (this.option.card ? 10 : 0);
-      // console.log(this.option.height)
-      this.visible = false;
-      this.$nextTick(() => {
-        this.visible = true;
-      });
-    },
-    updateScreenHeight(h){
-      this.option.height = h - 320
-    },
     beforeOpen(done,type){
       this.type=type;
       done()
@@ -116,6 +80,9 @@ export default {
       // console.log(this.getUpdateData())
       this.api.update(this.getUpdateData()).then( done )
       // done();
+    },
+    updateItem(id,updateData){
+      this.api.update({id,updateData})
     },
     getUpdateData(){
       let id = this.item.id
